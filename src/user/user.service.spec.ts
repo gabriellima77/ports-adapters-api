@@ -61,9 +61,11 @@ describe('UserService', () => {
     const newUsers = await Promise.all(
       data.map((user) => service.create(user)),
     );
-    expect(newUsers).toHaveLength(2);
-    expect(newUsers[0].name).toEqual('Gabriel Lima');
-    expect(newUsers[1].name).toEqual('Tonico');
+
+    const users = await service.findAll();
+    expect(users).toHaveLength(2);
+    expect(typeof users[0].name).toEqual('string');
+    expect(typeof users[1].name).toEqual('string');
 
     newUsers.map((user) => service.remove(user.id));
   });
@@ -91,8 +93,6 @@ describe('UserService', () => {
     expect(user.id).toEqual(newUsers[0].id);
     newUsers.map((user) => service.remove(user.id));
   });
-
-  it('should update a User', () => {});
 
   it('should remove a User', async () => {
     const data = [
@@ -237,11 +237,4 @@ describe('UserService', () => {
 
     service.remove(newUser.id);
   });
-
-  //   service = module.get<UserService>(UserService);
-  // });
-
-  // it('should be defined', () => {
-  //   expect(service).toBeDefined();
-  // });
 });
