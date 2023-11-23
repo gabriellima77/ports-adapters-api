@@ -3,6 +3,7 @@ import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { Company } from '../entities/company.entity';
+import { Location } from 'src/location/entities/location.entity';
 
 @Injectable()
 export class CompanyRepositoryAdapterInMemory
@@ -32,6 +33,10 @@ export class CompanyRepositoryAdapterInMemory
     return company;
   }
 
+  async findByCnpj(cnpj: string): Promise<Company> {
+    return this.companies.find((company) => company.cnpj === cnpj);
+  }
+
   async remove(id: number): Promise<{ id: number }> {
     this.companies = this.companies.filter((company) => company.id !== id);
 
@@ -49,6 +54,7 @@ export class CompanyRepositoryAdapterInMemory
           cnpj: cnpj ?? company.cnpj,
           name: name ?? company.name,
           website: website ?? company.website,
+          locations: company.locations,
         };
       }
 
@@ -56,5 +62,20 @@ export class CompanyRepositoryAdapterInMemory
     });
 
     return await this.findOne(id);
+  }
+
+  async addLocationToCompany(id: number, location: Location): Promise<Company> {
+    const companyIndex = this.companies.findIndex(
+      (company) => id === company.id,
+    );
+    if (companyIndex === -1) return;
+
+    const company = this.companies[companyIndex];
+    const hasLocation = company.locations.some(({ id }) => company.id === id);
+    if (hasLocation) return;
+
+    this.companies[companyIndex].locations.push(location);
+
+    return this.companies[companyIndex];
   }
 }
