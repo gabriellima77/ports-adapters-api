@@ -10,9 +10,13 @@ export class LocationService {
     readonly locationRepository: ILocationRepositoryGateway,
   ) {}
 
-  async create({ cep, ...rest }: CreateLocationDto) {
+  private async validateCep(cep: string) {
     const regexp = new RegExp(/^\d{5}-\d{3}$/g);
-    const isValidCep = regexp.test(cep);
+    return regexp.test(cep);
+  }
+
+  async create({ cep, ...rest }: CreateLocationDto) {
+    const isValidCep = await this.validateCep(cep);
 
     if (!isValidCep) {
       throw new BadRequestException('Cep is not valid');
@@ -29,8 +33,14 @@ export class LocationService {
     return this.locationRepository.findOne(id);
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return this.locationRepository.update(id, updateLocationDto);
+  async update(id: number, { cep, ...rest }: UpdateLocationDto) {
+    const isValidCep = await this.validateCep(cep);
+
+    if (!isValidCep) {
+      throw new BadRequestException('Cep is not valid');
+    }
+
+    return this.locationRepository.update(id, { ...rest, cep });
   }
 
   remove(id: number) {

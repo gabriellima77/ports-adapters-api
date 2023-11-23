@@ -147,6 +147,27 @@ describe('CompanyService', () => {
     expect(updateCompany.website).toEqual('https://newsite.com.br');
   });
 
+  it('should not update Company with an invalid cnpj', async () => {
+    const data: CreateCompanyDto = {
+      name: 'HubLocal',
+      cnpj: '23.871.225/0001-19',
+      website: 'https://hublocal.com.br/',
+    };
+
+    const newCompany = await service.create(data);
+
+    expect(
+      service.update(newCompany.id, {
+        cnpj: '23.871.225/0001-20222',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(
+      service.update(newCompany.id, {
+        cnpj: '23.871.225/0001-20222',
+      }),
+    ).rejects.toThrow();
+  });
+
   it('should add Location to a existing Company', async () => {
     const data: CreateCompanyDto = {
       name: 'HubLocal',

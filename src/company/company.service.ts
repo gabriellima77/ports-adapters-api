@@ -11,16 +11,26 @@ export class CompanyService {
     readonly companyRepository: ICompanyRepositoryGateway,
   ) {}
 
-  async create({ cnpj, ...rest }: CreateCompanyDto) {
+  private async validateCnpj(cnpj: string) {
     const companyAlreadyExists = await this.companyRepository.findByCnpj(cnpj);
     if (companyAlreadyExists) {
-      throw new BadRequestException('Company already exists');
+      return { valid: false, message: 'Company already exists' };
     }
 
     const cnpjRegexp = new RegExp(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/g);
     const isValidCnpj = cnpjRegexp.test(cnpj.trim());
     if (!isValidCnpj) {
-      throw new BadRequestException('Cnpj is invalid');
+      return { valid: false, message: 'Cnpj is invalid' };
+    }
+
+    return { valid: true, message: '' };
+  }
+
+  async create({ cnpj, ...rest }: CreateCompanyDto) {
+    const { valid, message } = await this.validateCnpj(cnpj);
+
+    if (!valid) {
+      throw new BadRequestException(message);
     }
 
     return this.companyRepository.create({
@@ -37,8 +47,14 @@ export class CompanyService {
     return this.companyRepository.findOne(id);
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return this.companyRepository.update(id, updateCompanyDto);
+  async update(id: number, { cnpj, ...rest }: UpdateCompanyDto) {
+    const { valid, message } = await this.validateCnpj(cnpj);
+
+    if (!valid) {
+      throw new BadRequestException(message);
+    }
+
+    return this.companyRepository.update(id, { ...rest, cnpj });
   }
 
   remove(id: number) {

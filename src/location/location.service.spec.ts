@@ -140,7 +140,7 @@ describe('LocationService', () => {
     expect(removeLocation).toBeFalsy();
   });
 
-  it('should remove a Location', async () => {
+  it('should update a Location', async () => {
     const data: CreateLocationDto = {
       name: 'Hublocal',
       cep: '60160-250',
@@ -179,5 +179,26 @@ describe('LocationService', () => {
     expect(updatedLocation.neighborhood).toEqual('No where');
     expect(updatedLocation.state).toEqual('AC');
     expect(updatedLocation.street).toEqual('R. dos Bobos');
+  });
+
+  it('should not update a Location with an invalid cep', async () => {
+    const data: CreateLocationDto = {
+      name: 'Hublocal',
+      cep: '60160-250',
+      city: 'Fortaleza',
+      houseNumber: '578',
+      neighborhood: 'Meireles',
+      state: 'CE',
+      street: 'R. Pereira Valente',
+    };
+
+    const newLocation = await service.create(data);
+
+    expect(
+      service.update(newLocation.id, { cep: '60000-0000' }),
+    ).rejects.toThrow();
+    expect(
+      service.update(newLocation.id, { cep: '60000-0000' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 });
