@@ -137,8 +137,8 @@ describe('UserService', () => {
     );
 
     const { access_token } = await service.singIn(
-      newUsers[0].email,
-      newUsers[0].password,
+      data[0].email,
+      data[1].password,
     );
 
     const { email, sub } = jwtService.decode<PayloadDto>(access_token);
@@ -151,7 +151,53 @@ describe('UserService', () => {
     newUsers.map((user) => service.remove(user.id));
   });
 
-  it('should signIn not signIn a User that does not exists', () => {});
+  it('should signIn not signIn a User that does not exists', async () => {
+    const data = [
+      {
+        name: 'Gabriel Lima',
+        email: 'teste@gmail.com',
+        password: '123456',
+      },
+      {
+        name: 'Tonico',
+        email: 'desenvolvedor02@hublocal.com.br',
+        password: '123456',
+      },
+    ];
+
+    const newUsers = await Promise.all(
+      data.map((user) => service.create(user)),
+    );
+
+    expect(
+      service.singIn('user-does-not-exist@teste.com', 'Does not matter'),
+    ).rejects.toThrow();
+
+    newUsers.map((user) => service.remove(user.id));
+  });
+
+  it('should signIn not signIn a User with invalid password', async () => {
+    const data = [
+      {
+        name: 'Gabriel Lima',
+        email: 'teste@gmail.com',
+        password: '123456',
+      },
+      {
+        name: 'Tonico',
+        email: 'desenvolvedor02@hublocal.com.br',
+        password: '123456',
+      },
+    ];
+
+    const newUsers = await Promise.all(
+      data.map((user) => service.create(user)),
+    );
+
+    expect(service.singIn(data[0].email, 'Invalid Password')).rejects.toThrow();
+
+    newUsers.map((user) => service.remove(user.id));
+  });
 
   //   service = module.get<UserService>(UserService);
   // });

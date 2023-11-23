@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserRepositoryGateway } from './gateway/user-repository-gateway-interface';
 import { JwtService } from '@nestjs/jwt';
 import { PayloadDto } from './dto/payload.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -14,12 +15,19 @@ export class UserService {
     readonly jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.findByEmail(createUserDto.email);
+  async create({ password, ...rest }: CreateUserDto) {
+    const user = await this.userRepository.findByEmail(rest.email);
     if (user) {
       throw new Error('This email is already in use by another user');
     }
-    return this.userRepository.create(createUserDto);
+
+    const salt = await bcrypt.genSalt();
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    return this.userRepository.create({
+      ...rest,
+      password: encryptedPassword,
+    });
   }
 
   findAll() {
@@ -40,14 +48,16 @@ export class UserService {
 
   async singIn(
     email: string,
-    password: string,
+    userPassword: string,
   ): Promise<{ access_token: string }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new Error('Email or password is invalid');
     }
 
-    if (user.password !== password) {
+    const { password } = user;
+    const isCorrectPassword = await bcrypt.compare(userPassword, password);
+    if (!isCorrectPassword) {
       throw new Error('Email or password is invalid');
     }
 
