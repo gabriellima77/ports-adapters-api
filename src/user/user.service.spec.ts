@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { UserService } from './user.service';
 import { UserRepositoryAdapterInMemory } from './adapters/user-repository-adapter-in-memory';
 import { JwtService } from '@nestjs/jwt';
@@ -197,6 +198,44 @@ describe('UserService', () => {
     expect(service.singIn(data[0].email, 'Invalid Password')).rejects.toThrow();
 
     newUsers.map((user) => service.remove(user.id));
+  });
+
+  it('should update User name', async () => {
+    const data = {
+      name: 'Gabriel Lima',
+      email: 'teste@gmail.com',
+      password: '123456',
+    };
+    const newUser = await service.create(data);
+    const updateUser = await service.update(newUser.id, { name: 'New name' });
+
+    expect(updateUser.name).not.toEqual(data.name);
+    expect(updateUser.name).toEqual('New name');
+
+    service.remove(newUser.id);
+  });
+
+  it('should update User password', async () => {
+    const data = {
+      name: 'Gabriel Lima',
+      email: 'teste@gmail.com',
+      password: '123456',
+    };
+    const newUser = await service.create(data);
+    await service.update(newUser.id, {
+      password: 'PasswordTest123',
+    });
+
+    const { access_token } = await service.singIn(
+      data.email,
+      'PasswordTest123',
+    );
+
+    expect(access_token).toBeTruthy();
+    expect(typeof access_token).toEqual('string');
+    expect(service.singIn(data.email, data.password)).rejects.toThrow();
+
+    service.remove(newUser.id);
   });
 
   //   service = module.get<UserService>(UserService);

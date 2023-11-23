@@ -6,4 +6,5 @@ export interface IUserRepositoryGateway {
   findOne(id: number): Promise<User>;
   remove(id: number): Promise<{ id: number }>;
   findByEmail(email: string): Promise<User>;
+  update(id: number, data: Partial<User>): Promise<User>;
 }

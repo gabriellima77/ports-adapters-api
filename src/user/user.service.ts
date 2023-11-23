@@ -38,8 +38,20 @@ export class UserService {
     return this.userRepository.findOne(id);
   }
 
-  update(id: number, _updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const { name, password } = updateUserDto;
+    let newPassword: string | null = null;
+
+    if (password) {
+      const salt = await bcrypt.genSalt();
+      newPassword = await bcrypt.hash(password, salt);
+    }
+
+    return this.userRepository.update(id, {
+      ...updateUserDto,
+      name,
+      password: newPassword,
+    });
   }
 
   remove(id: number) {

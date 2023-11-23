@@ -17,6 +17,29 @@ export class UserRepositoryAdapterInMemory implements IUserRepositoryGateway {
     return newUser;
   }
 
+  async update(id: number, data: Partial<User>): Promise<User> {
+    const hasUser = await this.findOne(id);
+    if (!hasUser) {
+      throw new Error('User not found');
+    }
+
+    this.users = this.users.map((user) => {
+      if (user.id === id) {
+        const { name, password } = data;
+
+        return {
+          ...user,
+          name: name ?? user.name,
+          password: password ?? user.password,
+        };
+      }
+
+      return user;
+    });
+
+    return await this.findOne(id);
+  }
+
   async findAll(): Promise<User[]> {
     return this.users;
   }
