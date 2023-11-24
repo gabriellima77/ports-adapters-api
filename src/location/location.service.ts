@@ -25,8 +25,8 @@ export class LocationService {
     return this.locationRepository.create({ ...rest, cep });
   }
 
-  findAll() {
-    return this.locationRepository.findAll();
+  findAll(page = 0, pageSize = 10) {
+    return this.locationRepository.findAll(page, pageSize);
   }
 
   findOne(id: number) {
@@ -34,10 +34,12 @@ export class LocationService {
   }
 
   async update(id: number, { cep, ...rest }: UpdateLocationDto) {
-    const isValidCep = await this.validateCep(cep);
+    if (cep) {
+      const isValidCep = await this.validateCep(cep);
 
-    if (!isValidCep) {
-      throw new BadRequestException('Cep is not valid');
+      if (!isValidCep) {
+        throw new BadRequestException('Cep is not valid');
+      }
     }
 
     return this.locationRepository.update(id, { ...rest, cep });

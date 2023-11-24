@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
-@Controller('location')
+@Controller('locations')
 @UseGuards(AuthGuard)
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
@@ -24,8 +26,11 @@ export class LocationController {
   }
 
   @Get()
-  findAll() {
-    return this.locationService.findAll();
+  findAll(
+    @Param('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+    @Param('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+  ) {
+    return this.locationService.findAll(page, pageSize);
   }
 
   @Get(':id')

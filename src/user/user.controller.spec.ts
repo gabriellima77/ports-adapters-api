@@ -100,8 +100,7 @@ describe('UserController', () => {
         `/companies/${company.id}`,
         options,
       );
-    } catch (error) {
-      console.log(error);
+    } catch {
       fail('it should not reach here');
     }
   });

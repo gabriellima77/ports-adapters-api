@@ -5,6 +5,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { Company } from './entities/company.entity';
 import { fail } from 'assert';
 
+// API must be running
 describe('CompanyController', () => {
   const axiosInstance = axios.create({
     baseURL: 'http://localhost:3000/api/v1',
@@ -123,8 +124,7 @@ describe('CompanyController', () => {
         `/companies/${company.id}`,
         options,
       );
-    } catch (error) {
-      console.log(error);
+    } catch {
       fail('it should not reach here');
     }
   });
