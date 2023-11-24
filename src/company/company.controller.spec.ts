@@ -103,21 +103,86 @@ describe('CompanyController', () => {
   it('should find one Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const { data: company } = await axiosInstance.post<Company>(
+      const { data: newCompany } = await axiosInstance.post<Company>(
         '/companies',
         companiesData[0],
         options,
       );
 
+      const { data: company } = await axiosInstance.get<Company>(
+        `/companies/${newCompany.id}`,
+        options,
+      );
+
       expect(company).toBeTruthy();
-      expect(typeof company.id).toEqual('number');
-      expect(company.cnpj).toEqual(companiesData[0].cnpj);
+      expect(company.id).toEqual(newCompany.id);
+      expect(company.name).toEqual(newCompany.name);
 
       await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
       await axiosInstance.delete<{ id: number }>(
         `/companies/${company.id}`,
         options,
       );
+    } catch (error) {
+      console.log(error);
+      fail('it should not reach here');
+    }
+  });
+
+  it('should update a Company', async () => {
+    try {
+      const { userId, ...options } = await getOptions();
+      const { data: newCompany } = await axiosInstance.post<Company>(
+        '/companies',
+        companiesData[0],
+        options,
+      );
+
+      const { data: company } = await axiosInstance.patch<Company>(
+        `/companies/${newCompany.id}`,
+        { name: 'New name' },
+        options,
+      );
+
+      expect(company).toBeTruthy();
+      expect(company.id).toEqual(newCompany.id);
+      expect(company.name).toEqual('New name');
+
+      await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
+      await axiosInstance.delete<{ id: number }>(
+        `/companies/${company.id}`,
+        options,
+      );
+    } catch {
+      fail('it should not reach here');
+    }
+  });
+
+  it('should update a Company', async () => {
+    try {
+      const { userId, ...options } = await getOptions();
+      const { data: newCompany } = await axiosInstance.post<Company>(
+        '/companies',
+        companiesData[0],
+        options,
+      );
+
+      const {
+        data: { id },
+      } = await axiosInstance.delete<{ id: string }>(
+        `/companies/${newCompany.id}`,
+        options,
+      );
+
+      const { data: company } = await axiosInstance.get<Company>(
+        `/companies/${newCompany.id}`,
+        options,
+      );
+
+      expect(id).toEqual(newCompany.id);
+      expect(company).toBeFalsy();
+
+      await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
     } catch {
       fail('it should not reach here');
     }

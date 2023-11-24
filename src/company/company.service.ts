@@ -48,10 +48,12 @@ export class CompanyService {
   }
 
   async update(id: number, { cnpj, ...rest }: UpdateCompanyDto) {
-    const { valid, message } = await this.validateCnpj(cnpj);
+    if (cnpj) {
+      const { valid, message } = await this.validateCnpj(cnpj);
 
-    if (!valid) {
-      throw new BadRequestException(message);
+      if (!valid) {
+        throw new BadRequestException(message);
+      }
     }
 
     return this.companyRepository.update(id, { ...rest, cnpj });

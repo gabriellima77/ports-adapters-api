@@ -7,14 +7,13 @@ import {
   UseGuards,
   Request,
   UnauthorizedException,
-  DefaultValuePipe,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PayloadDto } from './dto/payload.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CompanyDto } from './dto/company.dto';
 
 @Controller('users')
 export class UserController {
@@ -41,5 +40,17 @@ export class UserController {
     }
 
     return this.userService.remove(+id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/:id/companies')
+  async addCompanyToUser(
+    @Param('id') id: string,
+    @Body('company') company: CompanyDto,
+  ) {
+    const user = await this.userService.findOne(+id);
+    if (!user || !company) return;
+
+    return this.userService.addCompanyToUser(+id, company);
   }
 }
