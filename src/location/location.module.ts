@@ -10,7 +10,7 @@ import { LocationRepositoryAdapterInMemory } from './adapters/location-repositor
     LocationRepositoryAdapterInMemory,
     {
       provide: 'LocationRepositoryAdapterInMemory',
-      useValue: LocationRepositoryAdapterInMemory,
+      useExisting: LocationRepositoryAdapterInMemory,
     },
   ],
 })

@@ -1,42 +1,45 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
   Delete,
+  Param,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { PayloadDto } from './dto/payload.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    readonly jwtService: JwtService,
+  ) {}
 
-  @Post()
+  @Post('/')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
+  @UseGuards(AuthGuard)
+  @Delete('/:id')
+  async remove(@Param('id') id: string, @Request() request: any) {
+    const { user }: { user: PayloadDto } = request;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
+    if (user.sub !== Number(id)) {
+      throw new UnauthorizedException();
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 }

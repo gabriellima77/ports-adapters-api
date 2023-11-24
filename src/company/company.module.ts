@@ -10,7 +10,7 @@ import { CompanyRepositoryAdapterInMemory } from './adapters/company-repository-
     CompanyRepositoryAdapterInMemory,
     {
       provide: 'CompanyRepositoryAdapterInMemory',
-      useValue: CompanyRepositoryAdapterInMemory,
+      useExisting: CompanyRepositoryAdapterInMemory,
     },
   ],
 })
