@@ -31,12 +31,11 @@ export class LocationRepositoryAdapterInMemory
     });
 
     this.locations.push(location);
-    await this.companyRepository.addLocationToCompany(companyId, location);
 
     return location;
   }
 
-  async findAll(page?: number, pageSize?: number): Promise<LocationEntity[]> {
+  async findAll(_page?: number, _pageSize?: number): Promise<LocationEntity[]> {
     return this.locations;
   }
 

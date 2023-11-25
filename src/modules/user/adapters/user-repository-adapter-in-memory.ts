@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { IUserRepositoryGateway } from '../gateway/user-repository-gateway-interface';
-import { CompanyEntity } from '../../company/entities/company.entity';
 
 @Injectable()
 export class UserRepositoryAdapterInMemory implements IUserRepositoryGateway {
@@ -69,21 +68,5 @@ export class UserRepositoryAdapterInMemory implements IUserRepositoryGateway {
   async findByEmail(userEmail: string): Promise<UserEntity> {
     const user = this.users.find(({ email }) => email === userEmail);
     return user;
-  }
-
-  async addCompanyToUser(
-    userId: number,
-    company: CompanyEntity,
-  ): Promise<UserEntity> {
-    const userIndex = this.users.findIndex(({ id }) => id === userId);
-    if (userIndex === -1) return;
-
-    const user = this.users[userIndex];
-    const hasCompany = user.companies.some(({ id }) => company.id === id);
-    if (hasCompany) return;
-
-    this.users[userIndex].companies.push(company);
-
-    return this.users[userIndex];
   }
 }

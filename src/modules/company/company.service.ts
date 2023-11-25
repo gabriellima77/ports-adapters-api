@@ -2,7 +2,6 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ICompanyRepositoryGateway } from './gateway/company-repository-gateway-interface';
-import { LocationEntity } from '../location/entities/location.entity';
 
 @Injectable()
 export class CompanyService {
@@ -61,9 +60,5 @@ export class CompanyService {
 
   remove(id: number) {
     return this.companyRepository.remove(id);
-  }
-
-  addLocationToCompany(id: number, location: LocationEntity) {
-    return this.companyRepository.addLocationToCompany(id, location);
   }
 }

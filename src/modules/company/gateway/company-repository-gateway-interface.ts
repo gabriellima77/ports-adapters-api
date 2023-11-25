@@ -1,4 +1,3 @@
-import { LocationEntity } from 'src/modules/location/entities/location.entity';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { CompanyEntity } from '../entities/company.entity';
@@ -10,8 +9,4 @@ export interface ICompanyRepositoryGateway {
   findByCnpj(cnpj: string): Promise<CompanyEntity>;
   remove(id: number): Promise<{ id: number }>;
   update(id: number, data: UpdateCompanyDto): Promise<CompanyEntity>;
-  addLocationToCompany(
-    id: number,
-    location: LocationEntity,
-  ): Promise<CompanyEntity>;
 }

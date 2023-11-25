@@ -3,7 +3,6 @@ import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { CompanyEntity } from '../entities/company.entity';
-import { LocationEntity } from '../../location/entities/location.entity';
 import { IUserRepositoryGateway } from '../../user/gateway/user-repository-gateway-interface';
 
 @Injectable()
@@ -38,12 +37,11 @@ export class CompanyRepositoryAdapterInMemory
     });
 
     this.companies.push(company);
-    await this.userRepository.addCompanyToUser(userId, company);
 
     return company;
   }
 
-  async findAll(page?: number, pageSize?: number): Promise<CompanyEntity[]> {
+  async findAll(_page?: number, _pageSize?: number): Promise<CompanyEntity[]> {
     return this.companies;
   }
 
@@ -81,23 +79,5 @@ export class CompanyRepositoryAdapterInMemory
     });
 
     return await this.findOne(id);
-  }
-
-  async addLocationToCompany(
-    id: number,
-    location: LocationEntity,
-  ): Promise<CompanyEntity> {
-    const companyIndex = this.companies.findIndex(
-      (company) => id === company.id,
-    );
-    if (companyIndex === -1) return;
-
-    const company = this.companies[companyIndex];
-    const hasLocation = company.locations.some(({ id }) => company.id === id);
-    if (hasLocation) return;
-
-    this.companies[companyIndex].locations.push(location);
-
-    return this.companies[companyIndex];
   }
 }
