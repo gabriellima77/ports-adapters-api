@@ -1,4 +1,4 @@
-export class Location {
+export class LocationEntity {
   id: number;
   name: string;
   cep: string;
@@ -9,7 +9,7 @@ export class Location {
   state: string;
   companyId: number;
 
-  constructor(props: Location) {
+  constructor(props: LocationEntity) {
     Object.assign(this, props);
   }
 }

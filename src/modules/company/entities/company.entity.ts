@@ -1,14 +1,14 @@
-import { Location } from 'src/modules/location/entities/location.entity';
+import { LocationEntity } from 'src/modules/location/entities/location.entity';
 
-export class Company {
+export class CompanyEntity {
   id: number;
   name: string;
   cnpj: string;
   website?: string;
-  locations?: Location[];
+  locations?: LocationEntity[];
   userId: number;
 
-  constructor({ website, ...rest }: Company) {
+  constructor({ website, ...rest }: CompanyEntity) {
     Object.assign(this, rest);
     this.locations = [];
 

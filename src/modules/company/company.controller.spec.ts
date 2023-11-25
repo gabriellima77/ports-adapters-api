@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { Company } from './entities/company.entity';
+import { CompanyEntity } from './entities/company.entity';
 import { fail } from 'assert';
 
 // API must be running
@@ -31,7 +31,7 @@ describe('CompanyController', () => {
     password: '123456',
   };
   const getOptions = async () => {
-    const { data: user } = await axiosInstance.post<User>(
+    const { data: user } = await axiosInstance.post<UserEntity>(
       '/users',
       createUserData,
     );
@@ -51,7 +51,7 @@ describe('CompanyController', () => {
   it('should create a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const { data: company } = await axiosInstance.post<Company>(
+      const { data: company } = await axiosInstance.post<CompanyEntity>(
         '/companies',
         companiesData[0],
         options,
@@ -76,7 +76,7 @@ describe('CompanyController', () => {
       const { userId, ...options } = await getOptions();
       const companies = await Promise.all(
         companiesData.map(async (company) => {
-          const { data } = await axiosInstance.post<Company>(
+          const { data } = await axiosInstance.post<CompanyEntity>(
             '/companies',
             company,
             options,
@@ -106,13 +106,13 @@ describe('CompanyController', () => {
   it('should find one Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const { data: newCompany } = await axiosInstance.post<Company>(
+      const { data: newCompany } = await axiosInstance.post<CompanyEntity>(
         '/companies',
         companiesData[0],
         options,
       );
 
-      const { data: company } = await axiosInstance.get<Company>(
+      const { data: company } = await axiosInstance.get<CompanyEntity>(
         `/companies/${newCompany.id}`,
         options,
       );
@@ -134,13 +134,13 @@ describe('CompanyController', () => {
   it('should update a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const { data: newCompany } = await axiosInstance.post<Company>(
+      const { data: newCompany } = await axiosInstance.post<CompanyEntity>(
         '/companies',
         companiesData[0],
         options,
       );
 
-      const { data: company } = await axiosInstance.patch<Company>(
+      const { data: company } = await axiosInstance.patch<CompanyEntity>(
         `/companies/${newCompany.id}`,
         { name: 'New name' },
         options,
@@ -163,7 +163,7 @@ describe('CompanyController', () => {
   it('should update a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const { data: newCompany } = await axiosInstance.post<Company>(
+      const { data: newCompany } = await axiosInstance.post<CompanyEntity>(
         '/companies',
         companiesData[0],
         options,
@@ -176,7 +176,7 @@ describe('CompanyController', () => {
         options,
       );
 
-      const { data: company } = await axiosInstance.get<Company>(
+      const { data: company } = await axiosInstance.get<CompanyEntity>(
         `/companies/${newCompany.id}`,
         options,
       );

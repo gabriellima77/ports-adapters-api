@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateLocationDto } from '../dto/create-location.dto';
-import { Location } from '../entities/location.entity';
+import { LocationEntity } from '../entities/location.entity';
 import { ILocationRepositoryGateway } from '../gateway/location-repository-gateway-interface';
 import { UpdateLocationDto } from '../dto/update-location.dto';
 import { ICompanyRepositoryGateway } from '../../company/gateway/company-repository-gateway-interface';
@@ -13,15 +13,18 @@ export class LocationRepositoryAdapterInMemory
     @Inject('CompanyRepositoryAdapterInMemory')
     private readonly companyRepository: ICompanyRepositoryGateway,
   ) {}
-  locations: Location[] = [];
+  locations: LocationEntity[] = [];
 
-  async create({ companyId, ...props }: CreateLocationDto): Promise<Location> {
+  async create({
+    companyId,
+    ...props
+  }: CreateLocationDto): Promise<LocationEntity> {
     const company = await this.companyRepository.findOne(companyId);
 
     if (!company) return;
 
     const newId = this.locations.length + 1;
-    const location = new Location({
+    const location = new LocationEntity({
       ...props,
       id: newId,
       companyId,
@@ -33,11 +36,11 @@ export class LocationRepositoryAdapterInMemory
     return location;
   }
 
-  async findAll(page?: number, pageSize?: number): Promise<Location[]> {
+  async findAll(page?: number, pageSize?: number): Promise<LocationEntity[]> {
     return this.locations;
   }
 
-  async findOne(id: number): Promise<Location> {
+  async findOne(id: number): Promise<LocationEntity> {
     return this.locations.find((location) => location.id === id);
   }
 
@@ -47,7 +50,7 @@ export class LocationRepositoryAdapterInMemory
     return { id };
   }
 
-  async update(id: number, props: UpdateLocationDto): Promise<Location> {
+  async update(id: number, props: UpdateLocationDto): Promise<LocationEntity> {
     this.locations = this.locations.map((location) => {
       if (location.id === id) {
         const updatedLocation = { ...location };

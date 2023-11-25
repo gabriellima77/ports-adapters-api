@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway-interface';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
-import { Company } from '../entities/company.entity';
-import { Location } from '../../location/entities/location.entity';
+import { CompanyEntity } from '../entities/company.entity';
+import { LocationEntity } from '../../location/entities/location.entity';
 import { IUserRepositoryGateway } from '../../user/gateway/user-repository-gateway-interface';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class CompanyRepositoryAdapterInMemory
     @Inject('UserRepositoryAdapterInMemory')
     private readonly userRepository: IUserRepositoryGateway,
   ) {}
-  companies: Company[] = [
+  companies: CompanyEntity[] = [
     {
       id: 1,
       name: 'Company',
@@ -25,13 +25,13 @@ export class CompanyRepositoryAdapterInMemory
     },
   ];
 
-  async create({ userId, ...props }: CreateCompanyDto): Promise<Company> {
+  async create({ userId, ...props }: CreateCompanyDto): Promise<CompanyEntity> {
     const user = await this.userRepository.findOne(userId);
 
     if (!user) return;
 
     const newId = this.companies.length + 1;
-    const company = new Company({
+    const company = new CompanyEntity({
       ...props,
       id: newId,
       userId,
@@ -43,17 +43,17 @@ export class CompanyRepositoryAdapterInMemory
     return company;
   }
 
-  async findAll(page?: number, pageSize?: number): Promise<Company[]> {
+  async findAll(page?: number, pageSize?: number): Promise<CompanyEntity[]> {
     return this.companies;
   }
 
-  async findOne(id: number): Promise<Company> {
+  async findOne(id: number): Promise<CompanyEntity> {
     const company = this.companies.find((company) => company.id === id);
 
     return company;
   }
 
-  async findByCnpj(cnpj: string): Promise<Company> {
+  async findByCnpj(cnpj: string): Promise<CompanyEntity> {
     return this.companies.find((company) => company.cnpj === cnpj);
   }
 
@@ -66,7 +66,7 @@ export class CompanyRepositoryAdapterInMemory
   async update(
     id: number,
     { cnpj, name, website }: UpdateCompanyDto,
-  ): Promise<Company> {
+  ): Promise<CompanyEntity> {
     this.companies = this.companies.map((company) => {
       if (company.id === id) {
         return {
@@ -83,7 +83,10 @@ export class CompanyRepositoryAdapterInMemory
     return await this.findOne(id);
   }
 
-  async addLocationToCompany(id: number, location: Location): Promise<Company> {
+  async addLocationToCompany(
+    id: number,
+    location: LocationEntity,
+  ): Promise<CompanyEntity> {
     const companyIndex = this.companies.findIndex(
       (company) => id === company.id,
     );

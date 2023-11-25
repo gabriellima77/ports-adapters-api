@@ -9,7 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserRepositoryGateway } from './gateway/user-repository-gateway-interface';
 import { JwtService } from '@nestjs/jwt';
 import { PayloadDto } from './dto/payload.dto';
-import { Company } from '../company/entities/company.entity';
+import { CompanyEntity } from '../company/entities/company.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -94,7 +94,7 @@ export class UserService {
     return { access_token };
   }
 
-  async addCompanyToUser(userId: number, company: Company) {
+  async addCompanyToUser(userId: number, company: CompanyEntity) {
     return this.userRepository.addCompanyToUser(userId, company);
   }
 }

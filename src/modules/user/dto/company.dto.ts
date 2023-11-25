@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Location } from 'src/modules/location/entities/location.entity';
+import { LocationEntity } from 'src/modules/location/entities/location.entity';
 
 export class CompanyDto {
   @IsNumber()
@@ -26,5 +26,5 @@ export class CompanyDto {
 
   @IsArray()
   @IsOptional()
-  locations?: Location[];
+  locations?: LocationEntity[];
 }

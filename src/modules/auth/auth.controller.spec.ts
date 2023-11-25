@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { fail } from 'assert';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 describe('AuthController', () => {
   const axiosInstance = axios.create({
@@ -12,9 +12,12 @@ describe('AuthController', () => {
     name: 'John Doe',
   };
 
-  it('should sign in an existing User', async () => {
+  it('should sign in an existing UserEntity', async () => {
     try {
-      const { data: user } = await axiosInstance.post<User>('/users', userData);
+      const { data: user } = await axiosInstance.post<UserEntity>(
+        '/users',
+        userData,
+      );
 
       const { data } = await axiosInstance.post<{ access_token: string }>(
         '/auth/login',
@@ -41,9 +44,12 @@ describe('AuthController', () => {
     }
   });
 
-  it('should not sign in a User with wrong password', async () => {
+  it('should not sign in a UserEntity with wrong password', async () => {
     try {
-      const { data: user } = await axiosInstance.post<User>('/users', userData);
+      const { data: user } = await axiosInstance.post<UserEntity>(
+        '/users',
+        userData,
+      );
 
       expect(
         axiosInstance.post<{ access_token: string }>('/auth/login', {
@@ -81,9 +87,12 @@ describe('AuthController', () => {
     }
   });
 
-  it('should not delete a User without token', async () => {
+  it('should not delete a UserEntity without token', async () => {
     try {
-      const { data: user } = await axiosInstance.post<User>('/users', userData);
+      const { data: user } = await axiosInstance.post<UserEntity>(
+        '/users',
+        userData,
+      );
 
       expect(
         axiosInstance.delete<{ id: number }>(`/users/${user.id}`),
@@ -100,9 +109,7 @@ describe('AuthController', () => {
           password: '123456',
         },
       );
-      const {
-        data: { id },
-      } = await axiosInstance.delete<{ id: number }>(`/users/${user.id}`, {
+      await axiosInstance.delete<{ id: number }>(`/users/${user.id}`, {
         headers: {
           Authorization: `Bearer ${data.access_token}`,
         },

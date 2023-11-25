@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { fail } from 'assert';
-import { CreateCompanyDto } from '../company/dto/create-company.dto';
 
 // API must be running
 describe('UserController', () => {
@@ -16,17 +15,13 @@ describe('UserController', () => {
     password: '1234567',
   };
 
-  const companyData: CreateCompanyDto = {
-    name: 'HubLocal',
-    cnpj: '23.871.225/0001-19',
-    website: 'https://hublocal.com.br/',
-    userId: 1,
-  };
-
   const getOptions = async (hasToCreateAnUser = true) => {
     let userId = -1;
     if (hasToCreateAnUser) {
-      const { data: user } = await axiosInstance.post<User>('/users', userData);
+      const { data: user } = await axiosInstance.post<UserEntity>(
+        '/users',
+        userData,
+      );
       userId = user.id;
     }
 
@@ -45,7 +40,7 @@ describe('UserController', () => {
 
   it('should create a User', async () => {
     try {
-      const { data: newUser } = await axiosInstance.post<User>(
+      const { data: newUser } = await axiosInstance.post<UserEntity>(
         '/users',
         userData,
       );
@@ -68,7 +63,9 @@ describe('UserController', () => {
     try {
       const { userId, ...options } = await getOptions();
 
-      expect(axiosInstance.post<User>('/users', userData)).rejects.toThrow();
+      expect(
+        axiosInstance.post<UserEntity>('/users', userData),
+      ).rejects.toThrow();
 
       await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
     } catch {

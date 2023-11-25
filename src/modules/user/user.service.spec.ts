@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import 'dotenv/config';
 import { UserService } from './user.service';
 import { UserRepositoryAdapterInMemory } from './adapters/user-repository-adapter-in-memory';
 import { JwtService } from '@nestjs/jwt';
 import { PayloadDto } from './dto/payload.dto';
-import { Company } from '../company/entities/company.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-const dotenv = require('dotenv');
-dotenv.config({
-  path: '.env',
-});
 
 describe('UserService', () => {
   let service: UserService;

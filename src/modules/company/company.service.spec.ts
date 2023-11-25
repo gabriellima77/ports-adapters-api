@@ -3,12 +3,12 @@ import { CompanyRepositoryAdapterInMemory } from './adapters/company-repository-
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UserRepositoryAdapterInMemory } from '../user/adapters/user-repository-adapter-in-memory';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 describe('CompanyService', () => {
   let service: CompanyService;
   const userRepository = new UserRepositoryAdapterInMemory();
-  let user: User;
+  let user: UserEntity;
   userRepository
     .create({
       companies: [],

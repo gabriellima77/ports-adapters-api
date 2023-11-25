@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import 'dotenv/config';
 import {
   CanActivate,
   ExecutionContext,
@@ -8,7 +8,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { PayloadDto } from '../user/dto/payload.dto';
-require('dotenv').config();
 
 @Injectable()
 export class AuthGuard implements CanActivate {

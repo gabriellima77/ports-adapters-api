@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { CreateLocationDto } from './dto/create-location.dto';
-import { Location } from './entities/location.entity';
+import { LocationEntity } from './entities/location.entity';
 import { fail } from 'assert';
 
 // API must be running
@@ -37,7 +37,7 @@ describe('LocationController', () => {
       email: 'test@gmail.com',
       password: '123456',
     };
-    const { data: user } = await axiosInstance.post<User>(
+    const { data: user } = await axiosInstance.post<UserEntity>(
       '/users',
       createUserData,
     );
@@ -58,7 +58,7 @@ describe('LocationController', () => {
     try {
       const { userId, ...options } = await getOptions();
 
-      const { data } = await axiosInstance.post<Location>(
+      const { data } = await axiosInstance.post<LocationEntity>(
         '/locations',
         locationsData[0],
         options,
@@ -84,7 +84,7 @@ describe('LocationController', () => {
 
       const newLocations = await Promise.all(
         locationsData.map(async (location) => {
-          const { data } = await axiosInstance.post<Location>(
+          const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
             location,
             options,
@@ -94,7 +94,7 @@ describe('LocationController', () => {
         }),
       );
 
-      const { data: locations } = await axiosInstance.get<Location[]>(
+      const { data: locations } = await axiosInstance.get<LocationEntity[]>(
         '/locations',
         options,
       );
@@ -105,7 +105,7 @@ describe('LocationController', () => {
       expect(locations[0].name).toEqual(newLocations[0].name);
       expect(locations[1].name).toEqual(newLocations[0].name);
 
-      await axiosInstance.delete<Location>(`/users/${userId}`, options);
+      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
       await Promise.all(
         locations.map((location) =>
           axiosInstance.delete(`/locations/${location.id}`, options),
@@ -122,7 +122,7 @@ describe('LocationController', () => {
 
       const locations = await Promise.all(
         locationsData.map(async (location) => {
-          const { data } = await axiosInstance.post<Location>(
+          const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
             location,
             options,
@@ -132,7 +132,7 @@ describe('LocationController', () => {
         }),
       );
 
-      const { data: location } = await axiosInstance.get<Location>(
+      const { data: location } = await axiosInstance.get<LocationEntity>(
         `/locations/${locations[1].id}`,
         options,
       );
@@ -141,7 +141,7 @@ describe('LocationController', () => {
       expect(typeof location.id).toEqual('number');
       expect(location.id).toEqual(locations[1].id);
 
-      await axiosInstance.delete<Location>(`/users/${userId}`, options);
+      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
       await Promise.all(
         locations.map((location) =>
           axiosInstance.delete(`/locations/${location.id}`, options),
@@ -158,7 +158,7 @@ describe('LocationController', () => {
 
       const locations = await Promise.all(
         locationsData.map(async (location) => {
-          const { data } = await axiosInstance.post<Location>(
+          const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
             location,
             options,
@@ -168,7 +168,7 @@ describe('LocationController', () => {
         }),
       );
 
-      const { data: location } = await axiosInstance.patch<Location>(
+      const { data: location } = await axiosInstance.patch<LocationEntity>(
         `/locations/${locations[1].id}`,
         {
           name: 'New name',
@@ -187,7 +187,7 @@ describe('LocationController', () => {
       expect(location.name).toEqual('New name');
       expect(location.houseNumber).toEqual('42069');
 
-      await axiosInstance.delete<Location>(`/users/${userId}`, options);
+      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
       await Promise.all(
         locations.map((location) =>
           axiosInstance.delete(`/locations/${location.id}`, options),
@@ -204,7 +204,7 @@ describe('LocationController', () => {
 
       const newLocations = await Promise.all(
         locationsData.map(async (location) => {
-          const { data } = await axiosInstance.post<Location>(
+          const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
             location,
             options,
@@ -219,7 +219,7 @@ describe('LocationController', () => {
         options,
       );
 
-      const { data: locations } = await axiosInstance.get<Location[]>(
+      const { data: locations } = await axiosInstance.get<LocationEntity[]>(
         '/locations',
         options,
       );
@@ -229,14 +229,13 @@ describe('LocationController', () => {
       expect(typeof location.id).toEqual('number');
       expect(location.id).toEqual(newLocations[1].id);
 
-      await axiosInstance.delete<Location>(`/users/${userId}`, options);
+      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
       await Promise.all(
         locations.map((location) =>
           axiosInstance.delete(`/locations/${location.id}`, options),
         ),
       );
-    } catch (error) {
-      console.log('error =>>', error);
+    } catch {
       fail('it should not reach here');
     }
   });
