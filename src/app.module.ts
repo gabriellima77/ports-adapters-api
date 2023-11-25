@@ -7,6 +7,9 @@ import { CompanyModule } from './modules/company/company.module';
 import { LocationModule } from './modules/location/location.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './modules/user/entities/user.model';
+import { Company } from './modules/company/entities/company.model';
+import { Location } from './modules/location/entities/location.model';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [User, Company, Location],
       synchronize: false,
     }),
   ],

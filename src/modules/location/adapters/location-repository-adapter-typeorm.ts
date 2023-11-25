@@ -33,6 +33,7 @@ export class LocationRepositoryAdapterTypeorm
       ...props,
       company,
     });
+    await this.locationRepository.save(newLocation);
     const location = new LocationEntity({
       ...props,
       companyId,
@@ -46,6 +47,9 @@ export class LocationRepositoryAdapterTypeorm
     const allLocations = await this.locationRepository.find({
       skip: page * pageSize,
       take: pageSize,
+      relations: {
+        company: true,
+      },
     });
 
     return createLocations(allLocations);
@@ -54,6 +58,9 @@ export class LocationRepositoryAdapterTypeorm
   async findOne(id: number): Promise<LocationEntity> {
     const hasLocation = await this.locationRepository.findOne({
       where: { id },
+      relations: {
+        company: true,
+      },
     });
 
     if (!hasLocation) return;
@@ -70,15 +77,17 @@ export class LocationRepositoryAdapterTypeorm
 
     if (!hasLocation) return;
 
-    const { id: locationId } =
-      await this.locationRepository.remove(hasLocation);
+    await this.locationRepository.remove(hasLocation);
 
-    return { id: locationId };
+    return { id };
   }
 
   async update(id: number, props: UpdateLocationDto): Promise<LocationEntity> {
     const hasLocation = await this.locationRepository.findOne({
       where: { id },
+      relations: {
+        company: true,
+      },
     });
 
     if (!hasLocation) return;

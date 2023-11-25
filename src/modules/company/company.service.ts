@@ -6,7 +6,7 @@ import { ICompanyRepositoryGateway } from './gateway/company-repository-gateway-
 @Injectable()
 export class CompanyService {
   constructor(
-    @Inject('CompanyRepositoryAdapterInMemory')
+    @Inject('CompanyRepositoryAdapterTypeorm')
     readonly companyRepository: ICompanyRepositoryGateway,
   ) {}
 

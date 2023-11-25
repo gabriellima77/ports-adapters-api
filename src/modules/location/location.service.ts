@@ -6,7 +6,7 @@ import { ILocationRepositoryGateway } from './gateway/location-repository-gatewa
 @Injectable()
 export class LocationService {
   constructor(
-    @Inject('LocationRepositoryAdapterInMemory')
+    @Inject('LocationRepositoryAdapterTypeorm')
     readonly locationRepository: ILocationRepositoryGateway,
   ) {}
 

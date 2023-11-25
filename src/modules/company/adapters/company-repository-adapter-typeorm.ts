@@ -27,8 +27,9 @@ export class CompanyRepositoryAdapterTypeorm
       ...props,
       user,
     });
-
+    await this.companyRepository.save(newCompany);
     const company = new CompanyEntity({ ...props, userId, id: newCompany.id });
+
     return company;
   }
 
@@ -36,6 +37,9 @@ export class CompanyRepositoryAdapterTypeorm
     const allCompanies = await this.companyRepository.find({
       skip: page * pageSize,
       take: pageSize,
+      relations: {
+        user: true,
+      },
     });
 
     return createCompanies(allCompanies);
@@ -44,6 +48,9 @@ export class CompanyRepositoryAdapterTypeorm
   async findOne(id: number): Promise<CompanyEntity> {
     const hasCompany = await this.companyRepository.findOne({
       where: { id },
+      relations: {
+        user: true,
+      },
     });
 
     if (!hasCompany) return;
@@ -56,6 +63,9 @@ export class CompanyRepositoryAdapterTypeorm
   async findByCnpj(cnpj: string): Promise<CompanyEntity> {
     const hasCompany = await this.companyRepository.findOne({
       where: { cnpj },
+      relations: {
+        user: true,
+      },
     });
 
     if (!hasCompany) return;
@@ -71,13 +81,18 @@ export class CompanyRepositoryAdapterTypeorm
     });
     if (!hasCompany) return;
 
-    const { id: companyId } = await this.companyRepository.remove(hasCompany);
+    await this.companyRepository.remove(hasCompany);
 
-    return { id: companyId };
+    return { id };
   }
 
   async update(id: number, data: UpdateCompanyDto): Promise<CompanyEntity> {
-    const hasCompany = await this.companyRepository.findOne({ where: { id } });
+    const hasCompany = await this.companyRepository.findOne({
+      where: { id },
+      relations: {
+        user: true,
+      },
+    });
     if (!hasCompany) return;
 
     const dataToChange = validateUpdateFields<UpdateCompanyDto>(data, {});

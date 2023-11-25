@@ -14,7 +14,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('UserRepositoryAdapterInMemory')
+    @Inject('UserRepositoryAdapterTypeorm')
     readonly userRepository: IUserRepositoryGateway,
     readonly jwtService: JwtService,
   ) {}

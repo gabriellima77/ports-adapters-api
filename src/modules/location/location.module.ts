@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { LocationController } from './location.controller';
 import { LocationRepositoryAdapterInMemory } from './adapters/location-repository-adapter-in-memory';
+import { LocationRepositoryAdapterTypeorm } from './adapters/location-repository-adapter-typeorm';
 import { CompanyRepositoryAdapterInMemory } from '../company/adapters/company-repository-adapter-in-memory';
 import { UserRepositoryAdapterInMemory } from '../user/adapters/user-repository-adapter-in-memory';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +15,7 @@ import { Company } from '../company/entities/company.model';
   providers: [
     LocationService,
     LocationRepositoryAdapterInMemory,
+    LocationRepositoryAdapterTypeorm,
     CompanyRepositoryAdapterInMemory,
     UserRepositoryAdapterInMemory,
     {
@@ -21,10 +23,13 @@ import { Company } from '../company/entities/company.model';
       useExisting: LocationRepositoryAdapterInMemory,
     },
     {
+      provide: 'LocationRepositoryAdapterTypeorm',
+      useExisting: LocationRepositoryAdapterTypeorm,
+    },
+    {
       provide: 'CompanyRepositoryAdapterInMemory',
       useExisting: CompanyRepositoryAdapterInMemory,
     },
-
     {
       provide: 'UserRepositoryAdapterInMemory',
       useExisting: UserRepositoryAdapterInMemory,

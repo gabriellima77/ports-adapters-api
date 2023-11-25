@@ -3,13 +3,15 @@ import { UserEntity } from '../user/entities/user.entity';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { LocationEntity } from './entities/location.entity';
 import { fail } from 'assert';
+import { CreateCompanyDto } from '../company/dto/create-company.dto';
+import { CompanyEntity } from '../company/entities/company.entity';
 
 // API must be running
 describe('LocationController', () => {
   const axiosInstance = axios.create({
     baseURL: 'http://localhost:3000/api/v1',
   });
-  const locationsData: CreateLocationDto[] = [
+  const locationsData: Omit<CreateLocationDto, 'companyId'>[] = [
     {
       name: 'Hublocal',
       cep: '60160-250',
@@ -18,7 +20,6 @@ describe('LocationController', () => {
       neighborhood: 'Meireles',
       state: 'CE',
       street: 'R. Pereira Valente',
-      companyId: 1,
     },
     {
       name: 'Hublocal',
@@ -28,15 +29,21 @@ describe('LocationController', () => {
       neighborhood: 'Meireles',
       state: 'CE',
       street: 'R. Pereira Valente',
-      companyId: 1,
     },
   ];
+
   const getOptions = async () => {
     const createUserData = {
       name: 'Gabriel Lima',
       email: 'test@gmail.com',
       password: '123456',
     };
+    const companyData: Omit<CreateCompanyDto, 'userId'> = {
+      name: 'HubLocal',
+      cnpj: '23.871.225/0001-19',
+      website: 'https://hublocal.com.br/',
+    };
+
     const { data: user } = await axiosInstance.post<UserEntity>(
       '/users',
       createUserData,
@@ -45,9 +52,19 @@ describe('LocationController', () => {
       '/auth/login',
       createUserData,
     );
+    const { data: company } = await axiosInstance.post<CompanyEntity>(
+      '/companies',
+      { ...companyData, userId: user.id },
+      {
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+        },
+      },
+    );
 
     return {
       userId: user.id,
+      companyId: company.id,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
@@ -56,17 +73,18 @@ describe('LocationController', () => {
 
   it('should create a Location', async () => {
     try {
-      const { userId, ...options } = await getOptions();
+      const { userId, companyId, ...options } = await getOptions();
+      const locationData = { ...locationsData[0], companyId };
 
       const { data } = await axiosInstance.post<LocationEntity>(
         '/locations',
-        locationsData[0],
+        locationData,
         options,
       );
 
       expect(data).toBeTruthy();
       expect(typeof data.id).toEqual('number');
-      expect(data.name).toEqual(locationsData[0].name);
+      expect(data.name).toEqual(locationData.name);
 
       await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
       await axiosInstance.delete<{ id: number }>(
@@ -80,13 +98,13 @@ describe('LocationController', () => {
 
   it('should find all Locations', async () => {
     try {
-      const { userId, ...options } = await getOptions();
+      const { userId, companyId, ...options } = await getOptions();
 
       const newLocations = await Promise.all(
         locationsData.map(async (location) => {
           const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
-            location,
+            { ...location, companyId },
             options,
           );
 
@@ -118,13 +136,13 @@ describe('LocationController', () => {
 
   it('should find one Location', async () => {
     try {
-      const { userId, ...options } = await getOptions();
+      const { userId, companyId, ...options } = await getOptions();
 
       const locations = await Promise.all(
         locationsData.map(async (location) => {
           const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
-            location,
+            { ...location, companyId },
             options,
           );
 
@@ -154,13 +172,13 @@ describe('LocationController', () => {
 
   it('should update one Location', async () => {
     try {
-      const { userId, ...options } = await getOptions();
+      const { userId, companyId, ...options } = await getOptions();
 
       const locations = await Promise.all(
         locationsData.map(async (location) => {
           const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
-            location,
+            { ...location, companyId },
             options,
           );
 
@@ -200,13 +218,13 @@ describe('LocationController', () => {
 
   it('should delete one Location', async () => {
     try {
-      const { userId, ...options } = await getOptions();
+      const { userId, companyId, ...options } = await getOptions();
 
       const newLocations = await Promise.all(
         locationsData.map(async (location) => {
           const { data } = await axiosInstance.post<LocationEntity>(
             '/locations',
-            location,
+            { ...location, companyId },
             options,
           );
 

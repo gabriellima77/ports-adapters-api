@@ -16,6 +16,7 @@ export class UserRepositoryAdapterTypeorm implements IUserRepositoryGateway {
 
   async create(props: CreateUserDto): Promise<UserEntity> {
     const newUser = this.userRepository.create(props);
+    await this.userRepository.save(newUser);
     const user = new UserEntity({ ...props, id: newUser.id, companies: [] });
 
     return user;
@@ -46,16 +47,17 @@ export class UserRepositoryAdapterTypeorm implements IUserRepositoryGateway {
     });
 
     if (!hasUser) return;
+    await this.userRepository.remove(hasUser);
 
-    const { id: userId } = await this.userRepository.remove(hasUser);
-
-    return { id: userId };
+    return { id };
   }
 
   async findByEmail(email: string): Promise<UserEntity> {
     const hasUser = await this.userRepository.findOne({
       where: { email },
     });
+
+    if (!hasUser) return;
 
     const [user] = createUsers([hasUser]);
 
