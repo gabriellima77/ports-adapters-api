@@ -5,9 +5,9 @@ import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entities/company.model';
 import { Repository } from 'typeorm';
-import { User } from 'src/modules/user/entities/user.model';
-import { createCompanies } from 'src/utils/create-entities';
-import { validateUpdateFields } from 'src/utils/validate-update-fields';
+import { User } from '../../user/entities/user.model';
+import { createCompanies } from '../../../utils/create-entities';
+import { validateUpdateFields } from '../../../utils/validate-update-fields';
 
 export class CompanyRepositoryAdapterTypeorm
   implements ICompanyRepositoryGateway

@@ -1,20 +1,18 @@
 import axios from 'axios';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './entities/user.entity';
 import { fail } from 'assert';
+import { CreateUserDto } from '../src/modules/user/dto/create-user.dto';
+import { UserEntity } from '../src/modules/user/entities/user.entity';
 
 // API must be running
 describe('UserController', () => {
   const axiosInstance = axios.create({
     baseURL: 'http://localhost:3000/api/v1',
   });
-
   const userData: CreateUserDto = {
     email: 'teste@gmail.com',
     name: 'Gabriel Lima',
     password: '1234567',
   };
-
   const getOptions = async (hasToCreateAnUser = true) => {
     let userId = -1;
     if (hasToCreateAnUser) {
@@ -54,8 +52,8 @@ describe('UserController', () => {
         `/users/${newUser.id}`,
         options,
       );
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -68,8 +66,8 @@ describe('UserController', () => {
       ).rejects.toThrow();
 
       await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 });

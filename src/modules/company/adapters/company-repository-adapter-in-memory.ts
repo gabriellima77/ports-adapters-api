@@ -1,34 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway-interface';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { CompanyEntity } from '../entities/company.entity';
-import { IUserRepositoryGateway } from '../../user/gateway/user-repository-gateway-interface';
 
 @Injectable()
 export class CompanyRepositoryAdapterInMemory
   implements ICompanyRepositoryGateway
 {
-  constructor(
-    @Inject('UserRepositoryAdapterInMemory')
-    private readonly userRepository: IUserRepositoryGateway,
-  ) {}
-  companies: CompanyEntity[] = [
-    {
-      id: 1,
-      name: 'Company',
-      userId: 1,
-      locations: [],
-      website: '',
-      cnpj: '11.111.111/1111-11',
-    },
-  ];
+  companies: CompanyEntity[] = [];
 
   async create({ userId, ...props }: CreateCompanyDto): Promise<CompanyEntity> {
-    const user = await this.userRepository.findOne(userId);
-
-    if (!user) return;
-
     const newId = this.companies.length + 1;
     const company = new CompanyEntity({
       ...props,

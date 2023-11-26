@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { fail } from 'assert';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -16,7 +17,11 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should check if server is running"', () => {
-      expect(appController.running().Status).toBe('OK');
+      try {
+        expect(appController.running().status).toBe('OK');
+      } catch (error) {
+        fail(error.message);
+      }
     });
   });
 });

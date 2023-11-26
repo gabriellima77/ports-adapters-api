@@ -2,18 +2,12 @@ import { BadRequestException } from '@nestjs/common';
 import { LocationRepositoryAdapterInMemory } from './adapters/location-repository-adapter-in-memory';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { LocationService } from './location.service';
-import { CompanyRepositoryAdapterInMemory } from '../company/adapters/company-repository-adapter-in-memory';
-import { UserRepositoryAdapterInMemory } from '../user/adapters/user-repository-adapter-in-memory';
 
 describe('LocationService', () => {
   let service: LocationService;
 
   beforeEach(() => {
-    const userRepository = new UserRepositoryAdapterInMemory();
-    const companyRepository = new CompanyRepositoryAdapterInMemory(
-      userRepository,
-    );
-    const repository = new LocationRepositoryAdapterInMemory(companyRepository);
+    const repository = new LocationRepositoryAdapterInMemory();
     service = new LocationService(repository);
   });
 

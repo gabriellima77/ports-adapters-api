@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { UserEntity } from '../user/entities/user.entity';
-import { CreateLocationDto } from './dto/create-location.dto';
-import { LocationEntity } from './entities/location.entity';
 import { fail } from 'assert';
-import { CreateCompanyDto } from '../company/dto/create-company.dto';
-import { CompanyEntity } from '../company/entities/company.entity';
+import { CreateLocationDto } from '../src/modules/location/dto/create-location.dto';
+import { CreateCompanyDto } from '../src/modules/company/dto/create-company.dto';
+import { UserEntity } from '../src/modules/user/entities/user.entity';
+import { CompanyEntity } from '../src/modules/company/entities/company.entity';
+import { LocationEntity } from '../src/modules/location/entities/location.entity';
 
 // API must be running
 describe('LocationController', () => {
@@ -70,6 +70,23 @@ describe('LocationController', () => {
       },
     };
   };
+  const cleanDb = async (
+    locations: LocationEntity[],
+    userId: number,
+    companyId: number,
+    options: { headers: { Authorization: string } },
+  ) => {
+    await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
+    await axiosInstance.delete<{ id: number }>(
+      `/companies/${companyId}`,
+      options,
+    );
+    await Promise.all(
+      locations.map((location) =>
+        axiosInstance.delete(`/locations/${location.id}`, options),
+      ),
+    );
+  };
 
   it('should create a Location', async () => {
     try {
@@ -86,13 +103,9 @@ describe('LocationController', () => {
       expect(typeof data.id).toEqual('number');
       expect(data.name).toEqual(locationData.name);
 
-      await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
-      await axiosInstance.delete<{ id: number }>(
-        `/locations/${data.id}`,
-        options,
-      );
-    } catch {
-      fail('it should not reach here');
+      await cleanDb([data], userId, companyId, options);
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -123,14 +136,9 @@ describe('LocationController', () => {
       expect(locations[0].name).toEqual(newLocations[0].name);
       expect(locations[1].name).toEqual(newLocations[0].name);
 
-      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
-      await Promise.all(
-        locations.map((location) =>
-          axiosInstance.delete(`/locations/${location.id}`, options),
-        ),
-      );
-    } catch {
-      fail('it should not reach here');
+      await cleanDb(locations, userId, companyId, options);
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -159,14 +167,9 @@ describe('LocationController', () => {
       expect(typeof location.id).toEqual('number');
       expect(location.id).toEqual(locations[1].id);
 
-      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
-      await Promise.all(
-        locations.map((location) =>
-          axiosInstance.delete(`/locations/${location.id}`, options),
-        ),
-      );
-    } catch {
-      fail('it should not reach here');
+      await cleanDb(locations, userId, companyId, options);
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -205,14 +208,9 @@ describe('LocationController', () => {
       expect(location.name).toEqual('New name');
       expect(location.houseNumber).toEqual('42069');
 
-      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
-      await Promise.all(
-        locations.map((location) =>
-          axiosInstance.delete(`/locations/${location.id}`, options),
-        ),
-      );
-    } catch {
-      fail('it should not reach here');
+      await cleanDb(locations, userId, companyId, options);
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -247,14 +245,9 @@ describe('LocationController', () => {
       expect(typeof location.id).toEqual('number');
       expect(location.id).toEqual(newLocations[1].id);
 
-      await axiosInstance.delete<LocationEntity>(`/users/${userId}`, options);
-      await Promise.all(
-        locations.map((location) =>
-          axiosInstance.delete(`/locations/${location.id}`, options),
-        ),
-      );
-    } catch {
-      fail('it should not reach here');
+      await cleanDb(locations, userId, companyId, options);
+    } catch (error) {
+      fail(error.message);
     }
   });
 });

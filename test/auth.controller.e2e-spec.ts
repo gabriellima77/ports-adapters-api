@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { fail } from 'assert';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../src/modules/user/entities/user.entity';
 
 describe('AuthController', () => {
   const axiosInstance = axios.create({
@@ -39,8 +39,8 @@ describe('AuthController', () => {
       });
 
       expect(id).toEqual(user.id);
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -82,8 +82,8 @@ describe('AuthController', () => {
       });
 
       expect(id).toEqual(user.id);
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -114,8 +114,8 @@ describe('AuthController', () => {
           Authorization: `Bearer ${data.access_token}`,
         },
       });
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 });

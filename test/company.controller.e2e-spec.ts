@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { UserEntity } from '../user/entities/user.entity';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { CompanyEntity } from './entities/company.entity';
 import { fail } from 'assert';
+import { CreateCompanyDto } from '../src/modules/company/dto/create-company.dto';
+import { CreateUserDto } from '../src/modules/user/dto/create-user.dto';
+import { UserEntity } from '../src/modules/user/entities/user.entity';
+import { CompanyEntity } from '../src/modules/company/entities/company.entity';
 
 // API must be running
 describe('CompanyController', () => {
@@ -67,8 +67,8 @@ describe('CompanyController', () => {
         `/companies/${company.id}`,
         options,
       );
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -99,8 +99,8 @@ describe('CompanyController', () => {
           ),
         ),
       );
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
@@ -128,12 +128,12 @@ describe('CompanyController', () => {
         `/companies/${company.id}`,
         options,
       );
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
-  xit('should update a Company', async () => {
+  it('should update a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
       const companyData = { ...companiesData[0], userId };
@@ -158,12 +158,12 @@ describe('CompanyController', () => {
         `/companies/${company.id}`,
         options,
       );
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 
-  xit('should update a Company', async () => {
+  it('should remove a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
       const companyData = { ...companiesData[0], userId };
@@ -189,8 +189,8 @@ describe('CompanyController', () => {
       expect(company).toBeFalsy();
 
       await axiosInstance.delete<{ id: number }>(`/users/${userId}`, options);
-    } catch {
-      fail('it should not reach here');
+    } catch (error) {
+      fail(error.message);
     }
   });
 });

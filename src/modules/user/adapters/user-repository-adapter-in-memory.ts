@@ -4,15 +4,7 @@ import { IUserRepositoryGateway } from '../gateway/user-repository-gateway-inter
 
 @Injectable()
 export class UserRepositoryAdapterInMemory implements IUserRepositoryGateway {
-  users: UserEntity[] = [
-    {
-      companies: [],
-      email: 'teste69@gmail.com',
-      id: 1,
-      name: 'Julian HOHO',
-      password: 'senha teste',
-    },
-  ];
+  users: UserEntity[] = [];
 
   async create(props: Omit<UserEntity, 'id'>): Promise<UserEntity> {
     const id = this.users.length + 1;

@@ -1,4 +1,4 @@
-import { LocationEntity } from 'src/modules/location/entities/location.entity';
+import { LocationEntity } from '../../location/entities/location.entity';
 
 export class CompanyEntity {
   id: number;

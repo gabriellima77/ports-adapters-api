@@ -1,9 +1,9 @@
-import { CompanyEntity } from 'src/modules/company/entities/company.entity';
-import { Company } from 'src/modules/company/entities/company.model';
-import { LocationEntity } from 'src/modules/location/entities/location.entity';
-import { Location } from 'src/modules/location/entities/location.model';
-import { UserEntity } from 'src/modules/user/entities/user.entity';
-import { User } from 'src/modules/user/entities/user.model';
+import { CompanyEntity } from '../modules/company/entities/company.entity';
+import { Company } from '../modules/company/entities/company.model';
+import { LocationEntity } from '../modules/location/entities/location.entity';
+import { Location } from '../modules/location/entities/location.model';
+import { UserEntity } from '../modules/user/entities/user.entity';
+import { User } from '../modules/user/entities/user.model';
 
 export function createLocations(
   locations: Location[],

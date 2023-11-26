@@ -5,8 +5,8 @@ import { UserEntity } from '../entities/user.entity';
 import { IUserRepositoryGateway } from '../gateway/user-repository-gateway-interface';
 import { User } from '../entities/user.model';
 import { Repository } from 'typeorm';
-import { createUsers } from 'src/utils/create-entities';
-import { validateUpdateFields } from 'src/utils/validate-update-fields';
+import { createUsers } from '../../../utils/create-entities';
+import { validateUpdateFields } from '../../../utils/validate-update-fields';
 
 export class UserRepositoryAdapterTypeorm implements IUserRepositoryGateway {
   constructor(

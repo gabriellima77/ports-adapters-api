@@ -4,10 +4,10 @@ import { UpdateLocationDto } from '../dto/update-location.dto';
 import { LocationEntity } from '../entities/location.entity';
 import { ILocationRepositoryGateway } from '../gateway/location-repository-gateway-interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Company } from 'src/modules/company/entities/company.model';
+import { Company } from '../../company/entities/company.model';
 import { Location } from '../entities/location.model';
-import { validateUpdateFields } from 'src/utils/validate-update-fields';
-import { createLocations } from 'src/utils/create-entities';
+import { validateUpdateFields } from '../../../utils/validate-update-fields';
+import { createLocations } from '../../../utils/create-entities';
 
 export class LocationRepositoryAdapterTypeorm
   implements ILocationRepositoryGateway

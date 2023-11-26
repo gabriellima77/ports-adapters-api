@@ -1,28 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateLocationDto } from '../dto/create-location.dto';
 import { LocationEntity } from '../entities/location.entity';
 import { ILocationRepositoryGateway } from '../gateway/location-repository-gateway-interface';
 import { UpdateLocationDto } from '../dto/update-location.dto';
-import { ICompanyRepositoryGateway } from '../../company/gateway/company-repository-gateway-interface';
 
 @Injectable()
 export class LocationRepositoryAdapterInMemory
   implements ILocationRepositoryGateway
 {
-  constructor(
-    @Inject('CompanyRepositoryAdapterInMemory')
-    private readonly companyRepository: ICompanyRepositoryGateway,
-  ) {}
   locations: LocationEntity[] = [];
 
   async create({
     companyId,
     ...props
   }: CreateLocationDto): Promise<LocationEntity> {
-    const company = await this.companyRepository.findOne(companyId);
-
-    if (!company) return;
-
     const newId = this.locations.length + 1;
     const location = new LocationEntity({
       ...props,
