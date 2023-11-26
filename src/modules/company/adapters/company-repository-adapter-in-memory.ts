@@ -3,6 +3,9 @@ import { ICompanyRepositoryGateway } from '../gateway/company-repository-gateway
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { CompanyEntity } from '../entities/company.entity';
+import { FindAllCompaniesDto } from '../dto/find-all-companies.dto';
+import { FindOneCompanyDto } from '../dto/find-one-company.dto';
+import { RemoveCompanyDto } from '../dto/remove-company.dto';
 
 @Injectable()
 export class CompanyRepositoryAdapterInMemory
@@ -23,11 +26,11 @@ export class CompanyRepositoryAdapterInMemory
     return company;
   }
 
-  async findAll(_page?: number, _pageSize?: number): Promise<CompanyEntity[]> {
+  async findAll(_props: FindAllCompaniesDto): Promise<CompanyEntity[]> {
     return this.companies;
   }
 
-  async findOne(id: number): Promise<CompanyEntity> {
+  async findOne({ id }: FindOneCompanyDto): Promise<CompanyEntity> {
     const company = this.companies.find((company) => company.id === id);
 
     return company;
@@ -37,16 +40,17 @@ export class CompanyRepositoryAdapterInMemory
     return this.companies.find((company) => company.cnpj === cnpj);
   }
 
-  async remove(id: number): Promise<{ id: number }> {
+  async remove({ id }: RemoveCompanyDto): Promise<{ id: number }> {
     this.companies = this.companies.filter((company) => company.id !== id);
 
     return { id };
   }
 
-  async update(
-    id: number,
-    { cnpj, name, website }: UpdateCompanyDto,
-  ): Promise<CompanyEntity> {
+  async update({
+    dataToUpdate: { cnpj, name, website },
+    id,
+    userId,
+  }: UpdateCompanyDto): Promise<CompanyEntity> {
     this.companies = this.companies.map((company) => {
       if (company.id === id) {
         return {
@@ -60,6 +64,6 @@ export class CompanyRepositoryAdapterInMemory
       return company;
     });
 
-    return await this.findOne(id);
+    return await this.findOne({ id, userId });
   }
 }

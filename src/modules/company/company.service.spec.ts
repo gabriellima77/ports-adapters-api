@@ -33,7 +33,10 @@ describe('CompanyService', () => {
       expect(company.cnpj).toEqual(data[0].cnpj);
       expect(company.website).toEqual(data[0].website);
 
-      await service.remove(company.id);
+      await service.remove({
+        id: company.id,
+        userId: 1,
+      });
     } catch (error) {
       fail(error.message);
     }
@@ -60,7 +63,10 @@ describe('CompanyService', () => {
         BadRequestException,
       );
       expect(service.create(data[0])).rejects.toThrow();
-      await service.remove(company.id);
+      await service.remove({
+        id: company.id,
+        userId: 1,
+      });
     } catch (error) {
       fail(error.message);
     }
@@ -70,12 +76,23 @@ describe('CompanyService', () => {
     try {
       await Promise.all(data.map((company) => service.create(company)));
 
-      const companies = await service.findAll();
+      const companies = await service.findAll({
+        page: 0,
+        pageSize: 10,
+        userId: 1,
+      });
 
       expect(companies).toHaveLength(2);
       expect(typeof companies[0].cnpj).toEqual('string');
       expect(typeof companies[1].cnpj).toEqual('string');
-      await Promise.all(companies.map(({ id }) => service.remove(id)));
+      await Promise.all(
+        companies.map(({ id }) =>
+          service.remove({
+            id,
+            userId: 1,
+          }),
+        ),
+      );
     } catch (error) {
       fail(error.message);
     }
@@ -87,11 +104,21 @@ describe('CompanyService', () => {
         data.map((company) => service.create(company)),
       );
 
-      const company = await service.findOne(companies[0].id);
+      const company = await service.findOne({
+        id: companies[0].id,
+        userId: 1,
+      });
 
       expect(company).toBeTruthy();
       expect(company.id).toEqual(companies[0].id);
-      await Promise.all(companies.map(({ id }) => service.remove(id)));
+      await Promise.all(
+        companies.map(({ id }) =>
+          service.remove({
+            id,
+            userId: 1,
+          }),
+        ),
+      );
     } catch (error) {
       fail(error.message);
     }
@@ -103,14 +130,31 @@ describe('CompanyService', () => {
         data.map((company) => service.create(company)),
       );
 
-      const { id } = await service.remove(newCompanies[1].id);
-      const companies = await service.findAll();
-      const removedCompany = await service.findOne(newCompanies[1].id);
+      const { id } = await service.remove({
+        id: newCompanies[1].id,
+        userId: 1,
+      });
+      const companies = await service.findAll({
+        userId: 1,
+        page: 0,
+        pageSize: 10,
+      });
+      const removedCompany = await service.findOne({
+        id: newCompanies[1].id,
+        userId: 1,
+      });
 
       expect(companies).toHaveLength(1);
       expect(id).toEqual(newCompanies[1].id);
       expect(removedCompany).toBeFalsy();
-      await Promise.all(companies.map(({ id }) => service.remove(id)));
+      await Promise.all(
+        companies.map(({ id }) =>
+          service.remove({
+            id,
+            userId: 1,
+          }),
+        ),
+      );
     } catch (error) {
       fail(error.message);
     }
@@ -119,10 +163,14 @@ describe('CompanyService', () => {
   it('should update Company', async () => {
     try {
       const newCompany = await service.create(data[0]);
-      const updateCompany = await service.update(newCompany.id, {
-        name: 'New name',
-        cnpj: '23.871.225/0001-20',
-        website: 'https://newsite.com.br',
+      const updateCompany = await service.update({
+        id: newCompany.id,
+        userId: 1,
+        dataToUpdate: {
+          name: 'New name',
+          cnpj: '23.871.225/0001-20',
+          website: 'https://newsite.com.br',
+        },
       });
 
       expect(updateCompany.id).toEqual(newCompany.id);
@@ -134,7 +182,10 @@ describe('CompanyService', () => {
       expect(updateCompany.cnpj).toEqual('23.871.225/0001-20');
       expect(updateCompany.website).toEqual('https://newsite.com.br');
 
-      await service.remove(newCompany.id);
+      await service.remove({
+        id: newCompany.id,
+        userId: 1,
+      });
     } catch (error) {
       fail(error.message);
     }
@@ -143,19 +194,28 @@ describe('CompanyService', () => {
   it('should not update Company with an invalid cnpj', async () => {
     try {
       const newCompany = await service.create(data[0]);
+      const updateData = {
+        id: newCompany.id,
+        dataToUpdate: {
+          cnpj: '23.871.225/0001-20222',
+        },
+        userId: 1,
+      };
 
+      expect(service.update(updateData)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
       expect(
-        service.update(newCompany.id, {
-          cnpj: '23.871.225/0001-20222',
-        }),
-      ).rejects.toBeInstanceOf(BadRequestException);
-      expect(
-        service.update(newCompany.id, {
-          cnpj: '23.871.225/0001-20222',
+        service.update({
+          ...updateData,
+          dataToUpdate: { cnpj: '23.871.225/0001-20222' },
         }),
       ).rejects.toThrow();
 
-      await service.remove(newCompany.id);
+      await service.remove({
+        id: newCompany.id,
+        userId: 1,
+      });
     } catch (error) {
       fail(error.message);
     }

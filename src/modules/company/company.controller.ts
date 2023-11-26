@@ -7,11 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { CompanyDataToUpdate } from './dto/update-company.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { PayloadDto } from '../user/dto/payload.dto';
 
 @Controller('companies')
 @UseGuards(AuthGuard)
@@ -19,27 +23,72 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  create(
+    @Body() createCompanyDto: Omit<CreateCompanyDto, 'userId'>,
+    @Request() request: { user: PayloadDto },
+  ) {
+    const {
+      user: { sub },
+    } = request;
+
+    return this.companyService.create({
+      ...createCompanyDto,
+      userId: +sub,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.companyService.findAll();
+  findAll(
+    @Param('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+    @Param('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Request() request: { user: PayloadDto },
+  ) {
+    const {
+      user: { sub },
+    } = request;
+    return this.companyService.findAll({
+      page,
+      pageSize,
+      userId: +sub,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companyService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() request: { user: PayloadDto }) {
+    const {
+      user: { sub },
+    } = request;
+    return this.companyService.findOne({
+      id: +id,
+      userId: +sub,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companyService.update(+id, updateCompanyDto);
+  update(
+    @Param('id') id: string,
+    @Body() dataToUpdate: CompanyDataToUpdate,
+    @Request() request: { user: PayloadDto },
+  ) {
+    const {
+      user: { sub },
+    } = request;
+
+    return this.companyService.update({
+      id: +id,
+      dataToUpdate,
+      userId: +sub,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(+id);
+  remove(@Param('id') id: string, @Request() request: { user: PayloadDto }) {
+    const {
+      user: { sub },
+    } = request;
+    return this.companyService.remove({
+      id: +id,
+      userId: +sub,
+    });
   }
 }

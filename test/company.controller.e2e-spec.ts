@@ -11,18 +11,16 @@ describe('CompanyController', () => {
     baseURL: 'http://localhost:3000/api/v1',
   });
 
-  const companiesData: CreateCompanyDto[] = [
+  const companiesData: Omit<CreateCompanyDto, 'userId'>[] = [
     {
       name: 'HubLocal',
       cnpj: '23.871.225/0001-19',
       website: 'https://hublocal.com.br/',
-      userId: 1,
     },
     {
       name: 'HubLocal',
       cnpj: '23.871.225/0001-18',
       website: 'https://hublocal.com.br/',
-      userId: 1,
     },
   ];
   const createUserData: CreateUserDto = {
@@ -51,7 +49,7 @@ describe('CompanyController', () => {
   it('should create a Company', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const companyData = { ...companiesData[0], userId };
+      const companyData = { ...companiesData[0] };
       const { data: company } = await axiosInstance.post<CompanyEntity>(
         '/companies',
         companyData,
@@ -75,15 +73,19 @@ describe('CompanyController', () => {
   it('should find all Companies', async () => {
     try {
       const { userId, ...options } = await getOptions();
-      const companies = await Promise.all(
+      await Promise.all(
         companiesData.map(async (company) => {
           const { data } = await axiosInstance.post<CompanyEntity>(
             '/companies',
-            { ...company, userId },
+            { ...company },
             options,
           );
           return data;
         }),
+      );
+      const { data: companies } = await axiosInstance.get<CompanyEntity[]>(
+        `/companies`,
+        options,
       );
 
       expect(companies).toHaveLength(2);
@@ -96,6 +98,66 @@ describe('CompanyController', () => {
           axiosInstance.delete<{ id: number }>(
             `/companies/${company.id}`,
             options,
+          ),
+        ),
+      );
+    } catch (error) {
+      fail(error.message);
+    }
+  });
+
+  it('should find all User Companies', async () => {
+    try {
+      const { userId, ...option } = await getOptions();
+      const { data: user } = await axiosInstance.post<UserEntity>('/users', {
+        name: 'Test2',
+        email: 'test2@gmail.com',
+        password: '123456',
+      });
+      const {
+        data: { access_token },
+      } = await axiosInstance.post<{ access_token: string }>('/auth/login', {
+        email: user.email,
+        password: '123456',
+      });
+      const options = [
+        option,
+        { headers: { Authorization: `Bearer ${access_token}` } },
+      ];
+      const users = [userId, user.id];
+
+      await Promise.all(
+        companiesData.map(async (company, index) => {
+          const { data } = await axiosInstance.post<CompanyEntity>(
+            '/companies',
+            { ...company },
+            options[index],
+          );
+          return data;
+        }),
+      );
+      const { data: companies } = await axiosInstance.get<CompanyEntity[]>(
+        `/companies`,
+        option,
+      );
+
+      expect(companies).toHaveLength(1);
+      expect(typeof companies[0].id).toEqual('number');
+
+      Promise.all(
+        users.map(
+          async (userId, index) =>
+            await axiosInstance.delete<{ id: number }>(
+              `/users/${userId}`,
+              options[index],
+            ),
+        ),
+      );
+      await Promise.all(
+        companies.map((company, index) =>
+          axiosInstance.delete<{ id: number }>(
+            `/companies/${company.id}`,
+            options[index],
           ),
         ),
       );

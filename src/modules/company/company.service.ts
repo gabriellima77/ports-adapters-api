@@ -2,6 +2,9 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ICompanyRepositoryGateway } from './gateway/company-repository-gateway-interface';
+import { FindAllCompaniesDto } from './dto/find-all-companies.dto';
+import { FindOneCompanyDto } from './dto/find-one-company.dto';
+import { RemoveCompanyDto } from './dto/remove-company.dto';
 
 @Injectable()
 export class CompanyService {
@@ -10,8 +13,11 @@ export class CompanyService {
     readonly companyRepository: ICompanyRepositoryGateway,
   ) {}
 
-  private async validateCnpj(cnpj: string) {
-    const companyAlreadyExists = await this.companyRepository.findByCnpj(cnpj);
+  private async validateCnpj(cnpj: string, userId: number) {
+    const companyAlreadyExists = await this.companyRepository.findByCnpj(
+      cnpj,
+      userId,
+    );
     if (companyAlreadyExists) {
       return { valid: false, message: 'Company already exists' };
     }
@@ -26,7 +32,7 @@ export class CompanyService {
   }
 
   async create({ cnpj, ...rest }: CreateCompanyDto) {
-    const { valid, message } = await this.validateCnpj(cnpj);
+    const { valid, message } = await this.validateCnpj(cnpj, rest.userId);
 
     if (!valid) {
       throw new BadRequestException(message);
@@ -38,27 +44,35 @@ export class CompanyService {
     });
   }
 
-  async findAll(page = 0, pageSize = 10) {
-    return await this.companyRepository.findAll(page, pageSize);
+  async findAll(props: FindAllCompaniesDto) {
+    return await this.companyRepository.findAll(props);
   }
 
-  findOne(id: number) {
-    return this.companyRepository.findOne(id);
+  findOne(props: FindOneCompanyDto) {
+    return this.companyRepository.findOne(props);
   }
 
-  async update(id: number, { cnpj, ...rest }: UpdateCompanyDto) {
+  async update({
+    id,
+    userId,
+    dataToUpdate: { cnpj, ...rest },
+  }: UpdateCompanyDto) {
     if (cnpj) {
-      const { valid, message } = await this.validateCnpj(cnpj);
+      const { valid, message } = await this.validateCnpj(cnpj, userId);
 
       if (!valid) {
         throw new BadRequestException(message);
       }
     }
 
-    return this.companyRepository.update(id, { ...rest, cnpj });
+    return this.companyRepository.update({
+      id,
+      userId,
+      dataToUpdate: { ...rest, cnpj },
+    });
   }
 
-  remove(id: number) {
-    return this.companyRepository.remove(id);
+  remove(props: RemoveCompanyDto) {
+    return this.companyRepository.remove(props);
   }
 }
