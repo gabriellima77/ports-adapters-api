@@ -25,8 +25,8 @@ export class LocationService {
     return this.locationRepository.create({ ...rest, cep });
   }
 
-  findAll(page = 0, pageSize = 10) {
-    return this.locationRepository.findAll(page, pageSize);
+  findAll(companyId: number, page = 0, pageSize = 10) {
+    return this.locationRepository.findAll(companyId, page, pageSize);
   }
 
   findOne(id: number) {

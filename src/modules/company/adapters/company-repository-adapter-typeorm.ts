@@ -49,6 +49,7 @@ export class CompanyRepositoryAdapterTypeorm
       take: pageSize,
       relations: {
         user: true,
+        locations: true,
       },
       where: {
         user: {

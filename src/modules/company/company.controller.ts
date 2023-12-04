@@ -10,6 +10,7 @@ import {
   Request,
   DefaultValuePipe,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -39,8 +40,8 @@ export class CompanyController {
 
   @Get()
   findAll(
-    @Param('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
-    @Param('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
     @Request() request: { user: PayloadDto },
   ) {
     const {

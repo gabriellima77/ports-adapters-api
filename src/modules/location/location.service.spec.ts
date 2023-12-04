@@ -71,7 +71,7 @@ describe('LocationService', () => {
 
     await Promise.all(data.map((location) => service.create(location)));
 
-    const locations = await service.findAll();
+    const locations = await service.findAll(1);
 
     expect(locations).toHaveLength(2);
     expect(typeof locations[0].id).toEqual('number');
@@ -140,7 +140,7 @@ describe('LocationService', () => {
     );
 
     const { id } = await service.remove(newLocations[0].id);
-    const locations = await service.findAll();
+    const locations = await service.findAll(1);
     const removeLocation = await service.findOne(newLocations[0].id);
 
     expect(locations).toHaveLength(1);

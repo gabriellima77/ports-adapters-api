@@ -10,7 +10,7 @@ export class CompanyEntity {
 
   constructor({ website, ...rest }: CompanyEntity) {
     Object.assign(this, rest);
-    this.locations = [];
+    this.locations = rest.locations ?? [];
 
     if (website) {
       this.website = website;

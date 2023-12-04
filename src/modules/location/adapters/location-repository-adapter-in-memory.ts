@@ -26,7 +26,11 @@ export class LocationRepositoryAdapterInMemory
     return location;
   }
 
-  async findAll(_page?: number, _pageSize?: number): Promise<LocationEntity[]> {
+  async findAll(
+    _companyId: number,
+    _page?: number,
+    _pageSize?: number,
+  ): Promise<LocationEntity[]> {
     return this.locations;
   }
 

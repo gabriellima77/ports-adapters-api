@@ -4,7 +4,11 @@ import { LocationEntity } from '../entities/location.entity';
 
 export interface ILocationRepositoryGateway {
   create(props: CreateLocationDto): Promise<LocationEntity>;
-  findAll(page?: number, pageSize?: number): Promise<LocationEntity[]>;
+  findAll(
+    companyId: number,
+    page?: number,
+    pageSize?: number,
+  ): Promise<LocationEntity[]>;
   findOne(id: number): Promise<LocationEntity>;
   remove(id: number): Promise<{ id: number }>;
   update(id: number, props: UpdateLocationDto): Promise<LocationEntity>;

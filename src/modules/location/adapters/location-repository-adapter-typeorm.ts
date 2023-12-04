@@ -43,8 +43,17 @@ export class LocationRepositoryAdapterTypeorm
     return location;
   }
 
-  async findAll(page?: number, pageSize?: number): Promise<LocationEntity[]> {
+  async findAll(
+    companyId: number,
+    page?: number,
+    pageSize?: number,
+  ): Promise<LocationEntity[]> {
     const allLocations = await this.locationRepository.find({
+      where: {
+        company: {
+          id: companyId,
+        },
+      },
       skip: page * pageSize,
       take: pageSize,
       relations: {

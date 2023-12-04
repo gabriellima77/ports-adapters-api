@@ -67,7 +67,7 @@ export class UserService {
   async singIn(
     email: string,
     userPassword: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; name: string }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Email or password is invalid');
@@ -90,6 +90,6 @@ export class UserService {
       secret: process.env.JWT_SECRET,
     });
 
-    return { access_token };
+    return { access_token, name: user.name };
   }
 }

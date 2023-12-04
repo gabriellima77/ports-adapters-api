@@ -9,10 +9,10 @@ export function createLocations(
   locations: Location[],
   companyId?: number,
 ): LocationEntity[] {
-  const newLocations = locations.map(({ ...props }) => {
+  const newLocations = locations.map(({ company, ...props }) => {
     return new LocationEntity({
       ...props,
-      companyId: companyId ?? props.company.id,
+      companyId: companyId ?? company.id,
     });
   });
 
@@ -23,11 +23,11 @@ export function createCompanies(
   companies: Company[],
   userId?: number,
 ): CompanyEntity[] {
-  const newCompanies = companies.map(({ locations, ...props }) => {
+  const newCompanies = companies.map(({ locations, user, ...props }) => {
     const newLocations = createLocations(locations, props.id);
     return new CompanyEntity({
       ...props,
-      userId: userId ?? props.user.id,
+      userId: userId ?? user.id,
       locations: newLocations,
     });
   });

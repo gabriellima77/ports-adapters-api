@@ -9,6 +9,7 @@ import {
   UseGuards,
   DefaultValuePipe,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
@@ -27,10 +28,12 @@ export class LocationController {
 
   @Get()
   findAll(
-    @Param('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
-    @Param('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('companyId', new DefaultValuePipe(-1), ParseIntPipe)
+    companyId: number,
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
   ) {
-    return this.locationService.findAll(page, pageSize);
+    return this.locationService.findAll(companyId, page, pageSize);
   }
 
   @Get(':id')
